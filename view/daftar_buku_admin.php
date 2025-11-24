@@ -44,6 +44,7 @@ include_once '../controller/c_buku.php';
 
     .navbar-left a:hover {
       color: #2e8a30ff;
+      transition: 0.3s;
     }
 
     .navbar-right {

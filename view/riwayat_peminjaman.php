@@ -8,37 +8,15 @@ if (!isset($_SESSION['id_user']) || $_SESSION['role'] != 'admin') {
 include '../model/m_koneksi.php';
 $koneksi = new m_koneksi();
 
-// SEARCH
-$search = isset($_GET['search']) ? $_GET['search'] : ""; //?(operator ternary seperti if)  //: (pemisah antara kondisi benar & salah)  //"" (isi dgn string ksong)
-
-// FILTER TANGGAL
-$filter = isset($_GET['filter']) ? $_GET['filter'] : "semua";   //Menampung pilihan filter waktu (semua/hari/minggu/bulan)
-$where = "WHERE p.status = 'dipinjam'";  //Menampilkan hanya buku yang masih dipinjam
-
-if ($filter == "hari") {
-    $where .= " AND p.tanggal_pinjam = CURDATE()"; //tanggal pinjamnya sama dengan hari ini
-}
-if ($filter == "minggu") {
-    $where .= " AND YEARWEEK(p.tanggal_pinjam) = YEARWEEK(CURDATE())";  //menampilkan data di minggu yg sama (tidak tercampur dengan minggu tahun lain)
-}
-if ($filter == "bulan") {
-    $where .= " AND MONTH(p.tanggal_pinjam) = MONTH(CURDATE()) /*menampilkan data yang tanggalnya masih dalam bulan dan tahun yang sama seperti sekarang.*/
-                AND YEAR(p.tanggal_pinjam) = YEAR(CURDATE())";
-}
-
-// SEARCH QUERY
-if (!empty($search)) {  //!empty() berarti jalankan blok hanya kalau $search tidak kosong.  //empty($search) mengembalikan true kalau $search kosong
-    $where .= " AND (b.judul LIKE '%$search%' OR u.nama LIKE '%$search%')";  //mencari lewat judul atau nama, selagi masih ada kata di tengah' %% maka akan ditampilkan
-}
-
-$query = mysqli_query($koneksi->koneksi, " 
+$query = mysqli_query($koneksi->koneksi, "
     SELECT p.*, b.judul, u.nama  
     FROM peminjaman p
     JOIN buku b ON p.id_buku = b.id_buku
     JOIN user u ON p.id_user = u.id_user
-    $where
-    ORDER BY p.id_peminjaman DESC 
+    WHERE p.status = 'dipinjam'
+    ORDER BY p.id_peminjaman DESC
 ");
+
 ?>
 
 <!DOCTYPE html>
@@ -83,7 +61,7 @@ table tr td {
 }
 
 table tr th {
-    background: #46a834ff;
+    background: #1f7e0fff;
     color: white;
 }
 
@@ -109,26 +87,26 @@ button {
 }
 
 button:hover {
-    background: #1dbd3aff;
+    background: #37e156ff;
 }
-
     </style>
 
 </head>
 
 <body>
 <div class="container">
-    <h2> Riwayat Peminjaman Buku</h2>
+    <div class="header-bar">
+    <h2>Riwayat Peminjaman Buku</h2>
 
     <form method="GET" class="filter-box">
         <select name="filter">
-            <option value="semua">Semua</option>
-            <option value="hari" <?= $filter == "hari" ? "selected" : "" ?>>Hari ini</option> <!-- Untuk mengecek apakah filter yang dipilih user sebelumnya adalah "hari". Jika iya → tambahkan selected pada tag <option> agar tetap terpilih setelah halaman reload. -->
-            <option value="minggu" <?= $filter == "minggu" ? "selected" : "" ?>>Minggu ini</option>
-            <option value="bulan" <?= $filter == "bulan" ? "selected" : "" ?>>Bulan ini</option>
+            <option>Semua</option>
+            <option>Hari ini</option> 
+            <option>Minggu ini</option>
+            <option>Bulan ini</option>
         </select>
 
-        <input type="text" name="search" placeholder="Cari buku atau nama..." value="<?= $search ?>"> <!-- Menampilkan kembali teks pencarian yang tadi diketik user ke input search setelah submit form. -->
+        <input type="text" name="search" placeholder="Cari buku atau nama...">
 
         <button type="submit">Filter</button>
     </form>

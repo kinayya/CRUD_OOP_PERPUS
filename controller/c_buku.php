@@ -57,30 +57,18 @@ try {
       if ($result) {
         echo "<script>alert('Buku berhasil diupdate');window.location='../view/daftar_buku_admin.php';</script>";
       } else {
-        echo "<script>alert('Gagal mengupdate buku');window.location='../edit_buku.php?id=$id';</script>";
+        echo "<script>alert('Gagal mengupdate buku');window.location='../view/edit_buku.php?id=$id';</script>";
       }
     }
 
- }  // tutup if(!empty($_GET['aksi']))
+  } // tutup if(!empty($_GET['aksi']))
 
-  // ====== TANPA AKSI (TAMPILKAN / SEARCH DATA BUKU) ======
+  // ===== Tampil Semua Buku =====
   else {
-
-    // Jika search
-    if (isset($_GET['cari']) && $_GET['cari'] != "") {
-      $keyword = $_GET['cari'];
-      $buku = $buku->cari_buku($keyword);   // fungsi search buku
-    } 
-
-    // Jika tidak search → tampil semua buku
-    else {
-      $buku = $buku->tampil_data();
-    }
-
-  } // akhir else tanpa aksi
+    $buku = $buku->tampil_data();
+  }
 
 } catch (Exception $e) {
   echo $e->getMessage();
 }
-
 ?>

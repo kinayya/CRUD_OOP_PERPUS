@@ -36,6 +36,7 @@
 
     .navbar-left a:hover {
       color: #2e8a30ff;
+      transition: 0.3s;
     }
 
     .navbar-right {

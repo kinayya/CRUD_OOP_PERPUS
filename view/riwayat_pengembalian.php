@@ -8,35 +8,12 @@ if (!isset($_SESSION['id_user']) || $_SESSION['role'] != 'admin') {
 include '../model/m_koneksi.php';
 $koneksi = new m_koneksi();
 
-// SEARCH
-$search = isset($_GET['search']) ? $_GET['search'] : "";
-
-// FILTER TANGGAL
-$filter = "semua";
-$where = "WHERE p.status = 'dikembalikan'";
-
-if ($filter == "hari") {
-    $where .= " AND p.tanggal_kembali = CURDATE()";
-}
-if ($filter == "minggu") {
-    $where .= " AND YEARWEEK(p.tanggal_kembali) = YEARWEEK(CURDATE())";
-}
-if ($filter == "bulan") {
-    $where .= " AND MONTH(p.tanggal_kembali) = MONTH(CURDATE()) 
-                AND YEAR(p.tanggal_kembali) = YEAR(CURDATE())";
-}
-
-// SEARCH QUERY (judul buku atau nama peminjam)
-if (!empty($search)) {
-    $where .= " AND (b.judul LIKE '%$search%' OR u.nama LIKE '%$search%')";
-}
-
 $query = mysqli_query($koneksi->koneksi, "
     SELECT p.*, b.judul, u.nama 
     FROM peminjaman p
     JOIN buku b ON p.id_buku = b.id_buku
     JOIN user u ON p.id_user = u.id_user
-    $where
+    WHERE p.status = 'dikembalikan'
     ORDER BY p.id_peminjaman DESC
 ");
 ?>
@@ -46,6 +23,8 @@ $query = mysqli_query($koneksi->koneksi, "
 <head>
     <title>Riwayat Pengembalian Buku</title>
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Merienda:wght@600&display=swap');
+
     body {
     font-family: Arial, sans-serif;
     background: #f4f6f9;
@@ -83,7 +62,7 @@ table tr td {
 }
 
 table tr th {
-    background: #46a834ff;
+    background: #1f7e0fff;
     color: white;
 }
 
@@ -109,9 +88,8 @@ button {
 }
 
 button:hover {
-    background: #1dbd3aff;
+    background: #37e156ff;
 }
-
     </style>
 
 </head>
@@ -119,16 +97,16 @@ button:hover {
 
 <div class="container">
     <h2>Riwayat Pengembalian Buku</h2>
-
+   
     <form method="GET" class="filter-box">
         <select name="filter">
-            <option value="semua">Semua</option>
-            <option value="hari" <?= $filter == "hari" ? "selected" : "" ?>>Hari ini</option>
-            <option value="minggu" <?= $filter == "minggu" ? "selected" : "" ?>>Minggu ini</option>
-            <option value="bulan" <?= $filter == "bulan" ? "selected" : "" ?>>Bulan ini</option>
+            <option>Semua</option>
+            <option>Hari ini</option>
+            <option>Minggu ini</option>
+            <option>Bulan ini</option>
         </select>
 
-        <input type="text" name="search" placeholder="Cari buku atau nama..." value="<?= $search ?>">
+        <input type="text" name="search" placeholder="Cari buku atau nama...">
 
         <button type="submit">Filter</button>
     </form>

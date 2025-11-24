@@ -48,6 +48,7 @@ $data = $buku->tampil_data_by_id($id);  //Mengambil data 1 buku berdasarkan id y
 
     .navbar-left a:hover {
       color: #2e8a30ff;
+      transition: 0.3s;
     }
 
     .navbar-right {

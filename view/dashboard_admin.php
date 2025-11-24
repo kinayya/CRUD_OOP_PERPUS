@@ -42,6 +42,8 @@ $total_kembali = mysqli_fetch_assoc($sql_kembali)['total'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Merienda:wght@600&display=swap');
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -78,6 +80,7 @@ $total_kembali = mysqli_fetch_assoc($sql_kembali)['total'];
         }
         .sidebar a:hover {
             background: #1dbd3aff;
+            transition: 0.3s;
         }
         .sidebar i {
             margin-right: 10px;
@@ -87,12 +90,34 @@ $total_kembali = mysqli_fetch_assoc($sql_kembali)['total'];
             margin-left: 250px;
             padding: 20px;
         }
-        .header {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            font-size: 20px;
+       .header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           background: white;
+           padding: 15px;
+           border-radius: 15px;
+           margin-bottom: 25px;
+           font-size: 20px;
+        }
+
+       .brand {
+          display: flex;
+          align-items: center;
+          gap: 10px; /* jarak antara teks & logo */
+          margin-right: 25px;
+        }
+
+       .brand h4 {
+         margin: 0;
+         font-size: 23px;
+         color: #136b39ff;
+         font-family: "Merienda", cursive;
+         font-weight: 600;
+        }
+
+       .brand img {
+         width: 45px;
         }
 
         .cards {
@@ -148,7 +173,15 @@ $total_kembali = mysqli_fetch_assoc($sql_kembali)['total'];
 
 <!-- MAIN -->
 <div class="main">
-    <div class="header">Welcome Admin!</div>
+    <div class="header">
+   <p>Welcome Admin!</p>
+
+   <div class="brand">
+        <h4>Daun Ilmu</h4>
+        <img src="../asset/logo.png" alt="">
+   </div>
+</div>
+
 
     <div class="cards">
         <div class="card">

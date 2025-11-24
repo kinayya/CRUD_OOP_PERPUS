@@ -1,86 +1,146 @@
 <?php
-session_start();
-include "koneksi.php";
+include "../model/m_koneksi.php"; // Sesuaikan lokasi file koneksi kamu
+$k = new m_koneksi();
+$koneksi = $k->koneksi;
 
-if (!isset($_SESSION['id_user'])) {
-    header("Location: login.php");
-    exit;
-}
+// Ambil data riwayat peminjaman Budi (id_user = 2)
+$query = mysqli_query($koneksi, "
+SELECT peminjaman.*, buku.judul, buku.penulis
+FROM peminjaman
+JOIN buku ON peminjaman.id_buku = buku.id_buku
+WHERE peminjaman.id_user = 2
+ORDER BY peminjaman.id_peminjaman DESC
+");
 
-$id_user = $_SESSION['id_user'];
-
-// Pinjam buku
-if (isset($_POST['pinjam'])) {
-    $id_buku = $_POST['id_buku'];
-    $tanggal_pinjam = date('Y-m-d');
-    $tanggal_kembali = date('Y-m-d', strtotime('+7 days')); // otomatis 7 hari
-    $status = 'dipinjam';
-
-    mysqli_query($koneksi, "INSERT INTO peminjaman (id_buku, id_user, tanggal_pinjam, tanggal_kembali, status)
-                            VALUES ('$id_buku','$id_user','$tanggal_pinjam','$tanggal_kembali','$status')");
-    header("Location: peminjaman.php");
-}
-
-// Kembalikan buku
-if (isset($_GET['kembalikan'])) {
-    $id = $_GET['kembalikan'];
-    mysqli_query($koneksi, "UPDATE peminjaman SET status='dikembalikan' WHERE id_peminjaman='$id'");
-    header("Location: peminjaman.php");
-}
 ?>
 
-<h2>Data Peminjaman Buku</h2>
-<a href="<?php echo $_SESSION['role'] == 'admin' ? 'admin_dashboard.php' : 'user_dashboard.php'; ?>">⬅ Kembali</a> | 
-<a href="logout.php">Logout</a>
-<hr>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Riwayat Peminjaman - Budi Santoso</title>
+    <style>
+        body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url('../asset/bg_user.png');
+    background-size: cover; 
+    background-repeat: no-repeat;
+}
 
-<?php if ($_SESSION['role'] == 'user'): ?>
-<form method="post">
-    <label>Pilih Buku:</label>
-    <select name="id_buku" required>
-        <option value="">-- Pilih Buku --</option>
-        <?php
-        $buku = mysqli_query($koneksi, "SELECT * FROM buku");
-        while ($b = mysqli_fetch_assoc($buku)) {
-            echo "<option value='$b[id_buku]'>$b[judul]</option>";
+.header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 30px 30px;
+    background-color: #49ee5ad0;
+    color: #fff;
+}
+
+.header img {
+    width: 50px;
+}
+
+.header h3 {
+    margin: 0;
+    font-size: 24px;
+    font-family: "Merienda", cursive;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    margin-left: 80px;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 25px; 
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #fff;
+    margin-left: 25px;
+    margin-right: 20px;
+    font-size: 17px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    background-color: #1bcb50ff; 
+    border-radius: 15px;
+    padding: 10px;
+}
+        table {
+            width: 80%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            font-size: 15px;
+            background: #f7fbd9ff;
+            border-radius: 10px;
+            overflow: hidden;
         }
-        ?>
-    </select>
-    <button type="submit" name="pinjam">Pinjam Buku</button>
-</form>
-<?php endif; ?>
+        th {
+            background: #2ecc71;
+            color: #fff;
+            padding: 12px;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
 
-<hr>
+    <div class="header">
+     <div class="navbar-left">
+      <h3>Daun Ilmu</h3>
+      <img src="../asset/logo.png" >
+      </div>
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>ID</th>
-        <th>Judul Buku</th>
-        <th>Tanggal Pinjam</th>
-        <th>Tanggal Kembali</th>
-        <th>Status</th>
-        <?php if ($_SESSION['role'] == 'user') echo "<th>Aksi</th>"; ?>
-    </tr>
-    <?php
-    $query = ($_SESSION['role'] == 'admin') ?
-        "SELECT p.*, b.judul FROM peminjaman p JOIN buku b ON p.id_buku=b.id_buku" :
-        "SELECT p.*, b.judul FROM peminjaman p JOIN buku b ON p.id_buku=b.id_buku WHERE id_user='$id_user'";
+    <div class="middle-title">
+        <h2>Daftar Buku</h2>
+    </div>
 
-    $data = mysqli_query($koneksi, $query);
-    while ($p = mysqli_fetch_assoc($data)) {
-        echo "
+     <div class="navbar">
+        <a href="dashboard_user.php">Dashboard</a>
+        <a href="daftar_buku_user.php">Daftar Buku</a>
+     </div>
+
+    </div>
+
+    <h2>Riwayat Peminjaman - Budi Santoso</h2>
+
+    <table>
         <tr>
-            <td>$p[id_peminjaman]</td>
-            <td>$p[judul]</td>
-            <td>$p[tanggal_pinjam]</td>
-            <td>$p[tanggal_kembali]</td>
-            <td>$p[status]</td>";
-        if ($_SESSION['role'] == 'user' && $p['status'] == 'dipinjam') {
-            echo "<td><a href='peminjaman.php?kembalikan=$p[id_peminjaman]'>Kembalikan</a></td>";
-        } else if ($_SESSION['role'] == 'user') {
-            echo "<td>-</td>";
-        }
-        echo "</tr>";
-    }
-    ?>
-</table>
+            <th>No</th>
+            <th>Judul Buku</th>
+            <th>Penulis</th>
+            <th>Tgl Pinjam</th>
+            <th>Tgl Kembali</th>
+            <th>Status</th>
+        </tr>
+
+        <?php
+        $no = 1;
+        while ($data = mysqli_fetch_assoc($query)) { ?>
+        <tr>
+            <td><?= $no++; ?></td>
+            <td><?= $data['judul']; ?></td>
+            <td><?= $data['penulis']; ?></td>
+            <td><?= $data['tanggal_pinjam']; ?></td>
+            <td><?= $data['tanggal_kembali']; ?></td>
+            <td><?= $data['status']; ?></td>
+        </tr>
+        <?php } ?>
+    </table>
+
+</body>
+</html>

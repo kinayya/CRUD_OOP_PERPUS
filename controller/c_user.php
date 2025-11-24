@@ -1,6 +1,6 @@
 <?php
 include_once '../model/m_user.php';
-$user = new m_user(); 
+$user = new m_user();
 
 try {
 
@@ -35,7 +35,7 @@ try {
         echo "<script>alert('Gagal menghapus data');window.location='../view/v_tampil_data.php';</script>";
       }
     }
-
+b
     // ===== UPDATE DATA =====
     else if ($_GET['aksi'] == 'update') {
       $id = $_POST['id_user'];
@@ -55,16 +55,9 @@ try {
     }
 
   } 
-  // ============ AKSI SEARCH ============ 
+  // ===== TAMPILKAN DATA =====
   else {
-
-    if (isset($_GET['cari']) && $_GET['cari'] != "") {
-      $keyword = $_GET['cari'];
-      $user = $user->cari_data($keyword);   // memanggil fungsi search
-    } else {
-      $user = $user->tampil_data();         // default: tampil semua user
-    }
-
+    $user = $user->tampil_data();
   }
 
 } catch (Exception $e) {
